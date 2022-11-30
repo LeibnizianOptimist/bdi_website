@@ -43,7 +43,7 @@ print(prediction)
 prev_value = response["prev_value"]
 print(prev_value)
 delta=round((prediction-prev_value),2)
-rate=round((delta/prev_value),2)
+rate=round((delta/prev_value),4)*100
 
 # - - - Button Returning a Value - - -
 
@@ -108,9 +108,9 @@ SYMB = window_selection_c.selectbox("Select Index", STOCK)
 
 
 #Features:
-BDI_path = os.path.join(BASE_PROJECT_PATH, "streamlit_data", "cleaned_weekly_BDI.csv")
-CIP_path = os.path.join(BASE_PROJECT_PATH, "streamlit_data", "cleaned_weekly_CIP.csv")
-NICKEL_path = os.path.join(BASE_PROJECT_PATH, "streamlit_data", "cleaned_important_features_data.csv")
+BDI_path = os.path.join(BASE_PROJECT_PATH, "bdi_website", "streamlit_data", "cleaned_weekly_BDI.csv")
+CIP_path = os.path.join(BASE_PROJECT_PATH, "bdi_website", "streamlit_data", "cleaned_weekly_CIP.csv")
+NICKEL_path = os.path.join(BASE_PROJECT_PATH, "bdi_website", "streamlit_data", "cleaned_important_features_data.csv")
 
 if SYMB=='BDI':
     data=pd.read_csv(BDI_path)
