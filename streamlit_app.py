@@ -14,6 +14,41 @@ from datetime import date
 
 import requests
 
+
+
+# - - - Title - - -
+st.set_page_config(layout="wide", initial_sidebar_state="expanded")
+
+# - - - Header Section - - -
+with st.container():
+    #st.subheader("Stock Market Data Analysis")
+    st.title("Baltic Dry Index Prediction Model")
+    d = st.date_input(
+        "Input Prediction day",
+        datetime.date(2022, 11, 14))
+    st.write('You are predictiing:', d)
+
+
+st.markdown(
+    """
+<style>
+[data-testid="stMetricValue"] {
+    font-size: 330%;
+}
+
+[data-testid="stMetricDelta"] {
+    font-size: 300%;
+}
+</style>
+""",
+    unsafe_allow_html=True,
+)
+
+# ------ layout setting---------------------------
+# window_selection_c = st.sidebar.container() # create an empty container in the sidebar
+# window_selection_c.markdown("## Insights") # add a title to the sidebar container
+sub_columns = st.columns(2) #Split the container into two columns for start and end date
+
 # ------ REQUESTING THE API ON GCLOUD RUN ---------------------------
 
 #currently the url only runs the local uvicorn instance.
@@ -30,71 +65,22 @@ y_true = 1177
 prevdelt=y_true-prev_value
 prevrate=round((y_true-prev_value)/prev_value,4)*100
 
-# - - - Title - - -
-st.set_page_config(layout="wide", initial_sidebar_state="expanded")
-
-# - - - Header Section - - -
-with st.container():
-    #st.subheader("Stock Market Data Analysis")
-    st.title("Baltic Dry Index Prediction Model")
-    st.metric(label="REAL BALTIC DRY INDEX", value=f'{y_true} USD', delta=f'{prevdelt} ({prevrate}%)')
-    d = st.date_input(
-        "Input Prediction day",
-        datetime.date(2020, 11, 14))
-    st.write('You are predictiing:', d)
-
-
-st.markdown(
-    """
-<style>
-[data-testid="stMetricValue"] {
-    font-size: 330%;
-}
-
-[data-testid="stMetricDelta"] {
-    font-size: 300%;
-}
-
-[data-testid="stMetricLabel"] {
-    font-size: 150%;
-}
-</style>
-""",
-    unsafe_allow_html=True,
-)
-
-# ------ layout setting---------------------------
-window_selection_c = st.sidebar.container() # create an empty container in the sidebar
-window_selection_c.markdown("## Insights") # add a title to the sidebar container
-sub_columns = st.columns(2) #Split the container into two columns for start and end date
-
 # - - - Button Returning a Value - - -
-if st.button('Predict'):
-    st.metric(label="PREDICTED BALTIC DRY INDEX", value=f'{round(prediction,2)} USD', delta=f'{delta} ({rate}%)')
-else:
-    st.metric(label="BALTIC DRY INDEX", value=f'{round(prev_value,2)} USD')
-#difference = prediction - prev_day
-#change = difference/prev_day
 
-# def show_delta(self):
-#         """
-#         Returning a predicted value for the BDI Index
-#         """
+button_status = st.empty()
+predict_button = button_status.button("Let's Predict")
+if predict_button:
+    button_status.empty()
 
-#         cols = st.columns(2)
-#         (color, marker) = ("green", "+") if difference >= 0 else ("red", "-")
+with st.container():
+    if predict_button:
+        with sub_columns[0]:
 
-#         cols[0].markdown(
-#             f"""<p style="font-size: 90%;margin-left:5px">{self.symbol} \t {e}</p>""",
-#             unsafe_allow_html=True
-#         )
-#         cols[1].markdown(
-#             f"""<p style="color:{color};font-size:90%;margin-right:5px">{marker} \t {difference} {marker} {change} % </p>""",
-#             unsafe_allow_html=True
-#         )
-
-
-
+            st.metric(label="PREDICTED BALTIC DRY INDEX", value=f'{round(prediction,2)} USD', delta=f'{delta} ({rate}%)')
+        with sub_columns[1]:
+            st.metric(label="REAL BALTIC DRY INDEX", value=f'{y_true} USD', delta=f'{prevdelt} ({prevrate}%)')
+    else:
+        st.metric(label="REAL BALTIC DRY INDEX", value=f'{prev_value} USD')
 
 # # - - - Date Selection - - -
 # def nearest_business_day(DATE: datetime.date):
@@ -125,19 +111,19 @@ else:
 # - - - Creating the Chart - - -
 # ---------------stock selection------------------
 STOCK = np.array([ "BDI", "CIP - YoY", "Nickel - Global Price"])
-SYMB = window_selection_c.selectbox("Select Index", STOCK)
+# SYMB = window_selection_c.selectbox("Select Index", STOCK)
 
 
 #Features:
 
 
 
-if SYMB=='BDI':
-    data=pd.read_csv("cleaned_weekly_BDI.csv")
-elif SYMB=='CIP - YoY':
-    data=pd.read_csv("weekly_cleanred_cip.csv")
-elif SYMB=="Nickel - Global Price":
-    data=pd.read_csv("cleaned_important_features_data.csv")
+# if SYMB=='BDI':
+data=pd.read_csv("cleaned_weekly_BDI.csv")
+# elif SYMB=='CIP - YoY':
+#     data=pd.read_csv("weekly_cleanred_cip.csv")
+# elif SYMB=="Nickel - Global Price":
+#     data=pd.read_csv("cleaned_important_features_data.csv")
 
 
 
@@ -152,6 +138,7 @@ elif SYMB=="Nickel - Global Price":
 # Plot raw data
 def plot_raw_data():
     fig = go.Figure()
+    # fig.update_layout(width=900)
     fig.add_trace(go.Scatter(x=data['time'], y=data['close'], name="stock", text=data['time']))
     fig.update_xaxes(
     rangeslider_visible=True,
@@ -165,9 +152,11 @@ def plot_raw_data():
         ])
     )
 )
-    st.plotly_chart(fig)
+    config = {'displayModeBar': False}
+    st.plotly_chart(fig, use_container_width = True)
 
-plot_raw_data()
+with st.container():
+    plot_raw_data()
 
 
 @st.cache
@@ -175,24 +164,6 @@ def load_data(ticker):
     data = yf.download(ticker, START, END)
     data.reset_index(inplace=True)
     return data
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # data_load_state = st.text('Loading...')
