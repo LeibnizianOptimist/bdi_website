@@ -14,23 +14,6 @@ from datetime import date
 
 import requests
 
-
-
-# - - - Title - - -
-st.set_page_config(layout="wide", initial_sidebar_state="expanded")
-
-# - - - Header Section - - -
-with st.container():
-    #st.subheader("Stock Market Data Analysis")
-    st.title("Baltic Dry Index Prediction Model")
-
-
-
-# ------ layout setting---------------------------
-window_selection_c = st.sidebar.container() # create an empty container in the sidebar
-window_selection_c.markdown("## Insights") # add a title to the sidebar container
-# sub_columns = window_selection_c.columns(2) #Split the container into two columns for start and end date
-
 # ------ REQUESTING THE API ON GCLOUD RUN ---------------------------
 
 #currently the url only runs the local uvicorn instance.
@@ -42,15 +25,54 @@ print(prediction)
 prev_value = response["prev_value"]
 print(prev_value)
 delta=round((prediction-prev_value),2)
-rate=round((delta/prev_value),2)
+rate=round((delta/prev_value),4)*100
+y_true = 1177
+prevdelt=y_true-prev_value
+prevrate=round((y_true-prev_value)/prev_value,4)*100
+
+# - - - Title - - -
+st.set_page_config(layout="wide", initial_sidebar_state="expanded")
+
+# - - - Header Section - - -
+with st.container():
+    #st.subheader("Stock Market Data Analysis")
+    st.title("Baltic Dry Index Prediction Model")
+    st.metric(label="REAL BALTIC DRY INDEX", value=f'{y_true} USD', delta=f'{prevdelt} ({prevrate}%)')
+    d = st.date_input(
+        "Input Prediction day",
+        datetime.date(2020, 11, 14))
+    st.write('You are predictiing:', d)
+
+
+st.markdown(
+    """
+<style>
+[data-testid="stMetricValue"] {
+    font-size: 330%;
+}
+
+[data-testid="stMetricDelta"] {
+    font-size: 300%;
+}
+
+[data-testid="stMetricLabel"] {
+    font-size: 150%;
+}
+</style>
+""",
+    unsafe_allow_html=True,
+)
+
+# ------ layout setting---------------------------
+window_selection_c = st.sidebar.container() # create an empty container in the sidebar
+window_selection_c.markdown("## Insights") # add a title to the sidebar container
+sub_columns = st.columns(2) #Split the container into two columns for start and end date
 
 # - - - Button Returning a Value - - -
-
-if st.button('Predict Model'):
-    st.metric(label="BALTIC DRY INDEX", value=f'{round(prediction,2)} Points', delta=f'{delta} ({rate}%)')
+if st.button('Predict'):
+    st.metric(label="PREDICTED BALTIC DRY INDEX", value=f'{round(prediction,2)} USD', delta=f'{delta} ({rate}%)')
 else:
-    st.write(' ')
-
+    st.metric(label="BALTIC DRY INDEX", value=f'{round(prev_value,2)} USD')
 #difference = prediction - prev_day
 #change = difference/prev_day
 
