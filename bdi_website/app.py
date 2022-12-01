@@ -113,12 +113,9 @@ SYMB = window_selection_c.selectbox("Select Index", STOCK)
 if SYMB=='BDI':
     data=pd.read_csv("../data/cleaned_weekly_BDI.csv")
 elif SYMB=='CIP - YoY':
-    data=pd.read_csv("../data/weekly_cleanred_cip.csv")
+    data=pd.read_csv("../data/cleaned_weekly_CIP.csv")
 elif SYMB=="Nickel - Global Price":
     data=pd.read_csv("../data/cleaned_important_features_data.csv")
-
-
-
 
 
 # In [22]: start = df.index.searchsorted(dt.datetime(2013, 1, 2))
