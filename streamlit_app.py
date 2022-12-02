@@ -23,10 +23,11 @@ st.set_page_config(layout="wide", initial_sidebar_state="expanded")
 with st.container():
     #st.subheader("Stock Market Data Analysis")
     st.title("Baltic Dry Index Prediction Model")
-    d = st.date_input(
-        "Input Prediction day",
-        datetime.date(2022, 11, 14))
-    st.write('You are predictiing:', d)
+    st.text('You are predicting : 2022-11-15')
+    # d = st.date_input(
+    #     "Input Prediction day",
+    #     datetime.date(2022, 11, 14))
+    # st.write('You are predictiing:', d)
 
 
 st.markdown(
@@ -39,6 +40,15 @@ st.markdown(
 [data-testid="stMetricDelta"] {
     font-size: 300%;
 }
+
+.css-184tjsw p {
+    font-size: 200%;
+}
+
+.css-183lzff{
+    font-size: 130%;
+}
+
 </style>
 """,
     unsafe_allow_html=True,
@@ -75,7 +85,6 @@ if predict_button:
 with st.container():
     if predict_button:
         with sub_columns[0]:
-
             st.metric(label="PREDICTED BALTIC DRY INDEX", value=f'{round(prediction,2)} USD', delta=f'{delta} ({rate}%)')
         with sub_columns[1]:
             st.metric(label="REAL BALTIC DRY INDEX", value=f'{y_true} USD', delta=f'{prevdelt} ({prevrate}%)')
