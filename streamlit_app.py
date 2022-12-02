@@ -4,7 +4,6 @@ import pandas as pd
 import streamlit as st
 import os
 
-
 import yfinance as yf
 from plotly import graph_objs as go
 
@@ -57,7 +56,7 @@ st.markdown(
 # ------ layout setting---------------------------
 # window_selection_c = st.sidebar.container() # create an empty container in the sidebar
 # window_selection_c.markdown("## Insights") # add a title to the sidebar container
-sub_columns = st.columns(2) #Split the container into two columns for start and end date
+sub_columns = st.columns(3) #Split the container into two columns for start and end date
 
 # ------ REQUESTING THE API ON GCLOUD RUN ---------------------------
 
@@ -88,6 +87,10 @@ with st.container():
             st.metric(label="PREDICTED BALTIC DRY INDEX", value=f'{round(prediction,2)} USD', delta=f'{delta} ({rate}%)')
         with sub_columns[1]:
             st.metric(label="REAL BALTIC DRY INDEX", value=f'{y_true} USD', delta=f'{prevdelt} ({prevrate}%)')
+        with sub_columns[2]:
+            diff_percentage = round((100 * np.abs(y_true - prediction) / y_true),1)
+            text = f'<p style="font-size: 200%;">PERENTAGE DIFFERENCE OF VALUES</p><p style="font-size: 500%; color: green;">{diff_percentage} %</p> '
+            st.write(text, unsafe_allow_html=True)
     else:
         st.metric(label="REAL BALTIC DRY INDEX", value=f'{prev_value} USD')
 
